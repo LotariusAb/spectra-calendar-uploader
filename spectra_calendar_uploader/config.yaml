@@ -1,0 +1,97 @@
+name: "Spectra 6 Photo + Calendar Uploader"
+version: "1.0.0"
+slug: "spectra_calendar_uploader"
+description: "LAN Upload UI (NFC) + serverseitiges HA-Kalenderrendering + hochwertige Spectra-6-Dithering + ESP32 Upload"
+arch:
+  - amd64
+  - aarch64
+  - armv7
+startup: services
+boot: auto
+init: false
+
+ingress: false
+
+ports:
+  8088/tcp: 8088
+
+homeassistant_api: true
+
+webui: "http://[HOST]:[PORT:8088]"
+
+options:
+  secret_path: ""
+  allowed_cidrs:
+    - ""
+
+  timezone: "Europe/Berlin"
+  locale: "de_DE"
+
+  out_width: 1200
+  out_height: 1600
+  top_ratio: 0.66
+  days_to_show: 7
+
+  show_titles: true
+
+  # max Zeilen pro Tag (Gesamt-Budget)
+  max_lines_per_day: 10
+
+  #max Zeilen pro Termin (Wordwrap)
+  max_lines_per_event: 3
+
+  timegrid_start_hour: 7
+  timegrid_end_hour: 20
+  timegrid_step_minutes: 60
+
+  calendar_sources: []
+
+  esp_targets:
+    - name: "Frame"
+      base_url: "http://192.168.4.1"
+      client_cidrs:
+        - "192.168.0.0/16"
+
+  esp_upload_endpoint: "/upload"
+  esp_upload_method: "POST"
+  esp_upload_field_name: "data"
+
+schema:
+  secret_path: str?
+  allowed_cidrs:
+    - str?
+
+  timezone: str
+  locale: str
+
+  out_width: int
+  out_height: int
+  top_ratio: float
+  days_to_show: int
+
+  show_titles: bool
+
+  # ✅ NEU: in Schema aufnehmen
+  max_lines_per_day: int
+  max_lines_per_event: int
+
+  timegrid_start_hour: int
+  timegrid_end_hour: int
+  timegrid_step_minutes: int
+
+  calendar_sources:
+    - entity_id: str
+      color: str?
+      busy_only: bool?
+
+  esp_targets:
+    - name: str
+      base_url: str
+      client_cidrs:
+        - str?
+
+  esp_upload_endpoint: str
+  esp_upload_method: str
+  esp_upload_field_name: str
+
+log_level: info

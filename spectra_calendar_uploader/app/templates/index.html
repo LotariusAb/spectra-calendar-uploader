@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Display Upload</title>
+  <link rel="stylesheet" href="{{ base_path }}/static/style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Bild hochladen</h1>
+    <p>Nach dem Upload wird das Display aktualisiert (Foto + 7-Tage-Kalender). Das Addon kann über die Homeassistant Konfiguration eingestellt werden</p>
+
+    <form method="post" enctype="multipart/form-data">
+      <input type="file" name="image" accept="image/*" required>
+      <button type="submit">Upload</button>
+    </form>
+
+    <hr>
+
+    <details>
+      <summary>Datenschutz</summary>
+      <p>Kalenderdaten werden serverseitig aus Home Assistant geladen. Im Browser werden keine Home Assistant Tokens verwendet.</p>
+    </details>
+  </main>
+</body>
+</html>
