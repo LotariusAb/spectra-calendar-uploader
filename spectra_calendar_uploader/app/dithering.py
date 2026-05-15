@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from PIL import Image
+import logging
+
+logger = logging.getLogger("spectra_uploader.dithering")
 
 # Spectra6 native palette (MUSS exakt so sein)
 SPECTRA6_RGB = [
@@ -29,7 +32,39 @@ def quantize_dither_floyd_steinberg(img: Image.Image) -> Image.Image:
         palette=pal_img,
         dither=Image.Dither.FLOYDSTEINBERG,
     )
-    return quant.convert("RGB")
+
+    rgb = quant.convert("RGB")
+
+    # Diagnostics only: sample-check palette compliance.
+    # This does not modify the image and is intentionally low-cost.
+    try:
+        violations = _sample_palette_violations(rgb)
+        if violations:
+            logger.warning(
+                "Dither produced non-palette RGB samples (showing up to 10): %s",
+                violations[:10],
+            )
+        else:
+            logger.debug("Dither palette sample-check: OK")
+    except Exception:
+        logger.exception("Palette sample-check failed")
+
+    return rgb
+
+
+def _sample_palette_violations(img: Image.Image, step: int = 64):
+    allowed = set(SPECTRA6_RGB)
+    w, h = img.size
+    px = img.load()
+    bad = []
+    for y in range(0, h, step):
+        for x in range(0, w, step):
+            c = px[x, y]
+            if c not in allowed:
+                bad.append((x, y, c))
+                if len(bad) >= 50:
+                    return bad
+    return bad
 
 
 def dither_to_spectra6_palette(img: Image.Image) -> Image.Image:

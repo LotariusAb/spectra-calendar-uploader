@@ -1,5 +1,8 @@
 import requests
 from urllib.parse import urljoin
+import logging
+
+logger = logging.getLogger("spectra_uploader.esp_upload")
 
 
 def upload_multipart(
@@ -32,6 +35,16 @@ def upload_multipart(
 
     m = (method or "POST").upper()
 
+    logger.info(
+        "ESP upload start: method=%s url=%s field=%s filename=%s bytes=%s timeout_s=%s",
+        m,
+        url,
+        field_name,
+        filename,
+        len(data_bytes or b""),
+        timeout_s,
+    )
+
     files = {
         field_name: (
             filename,
@@ -40,9 +53,18 @@ def upload_multipart(
         )
     }
 
-    resp = requests.request(m, url, files=files, timeout=timeout_s)
+    try:
+        resp = requests.request(m, url, files=files, timeout=timeout_s)
+    except Exception:
+        logger.exception("ESP upload request failed: url=%s", url)
+        raise
 
     body = resp.text if resp.text is not None else ""
+    logger.info(
+        "ESP upload response: status=%s body_prefix=%r",
+        resp.status_code,
+        (body or "")[:200],
+    )
     return int(resp.status_code), body
 
 

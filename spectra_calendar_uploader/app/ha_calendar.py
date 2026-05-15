@@ -1,6 +1,9 @@
 import os
 import requests
 from datetime import datetime, timezone
+import logging
+
+logger = logging.getLogger("spectra_uploader.ha_calendar")
 
 
 def _get_token() -> str:
@@ -98,12 +101,29 @@ def _fetch_calendar_events_single(entity_id: str, start, end):
         "end": _to_rfc3339_utc(end),
     }
 
-    print(f"[CAL] GET {url} params={params}")
+    logger.info("HA Calendar GET: entity_id=%s url=%s params=%s", entity_id, url, params)
 
-    r = requests.get(url, headers=_ha_headers(), params=params, timeout=15)
+    try:
+        r = requests.get(url, headers=_ha_headers(), params=params, timeout=15)
+    except Exception:
+        logger.exception("HA Calendar request failed: entity_id=%s url=%s", entity_id, url)
+        raise
+
+    logger.info(
+        "HA Calendar response: entity_id=%s status=%s bytes=%s",
+        entity_id,
+        r.status_code,
+        len(r.content or b""),
+    )
 
     if r.status_code >= 400:
         txt = (r.text or "").strip()
+        logger.error(
+            "HA Calendar error: entity_id=%s status=%s body_prefix=%r",
+            entity_id,
+            r.status_code,
+            txt[:300],
+        )
         raise RuntimeError(
             f"HA Calendar API Error {r.status_code}: {txt[:300]} "
             f"(entity_id={entity_id}, url={url}, params={params})"

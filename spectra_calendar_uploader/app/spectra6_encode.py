@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from typing import Dict, Tuple
 from PIL import Image
+import logging
+
+logger = logging.getLogger("spectra_uploader.spectra6_encode")
 
 # Spectra6 "native" RGB palette (muss identisch zu dithering.py sein)
 # Codes (nibbles) folgen der NeoFrame Konvention:
@@ -57,6 +60,13 @@ def rgb_image_to_packed_4bit_codes(img: Image.Image, strict: bool = True) -> byt
             p1 = px[x, y]
             if p1 not in SPECTRA6_RGB_TO_CODE:
                 if strict:
+                    logger.error(
+                        "Strict palette violation at (x=%s,y=%s) p1=%s allowed=%s",
+                        x,
+                        y,
+                        p1,
+                        sorted(SPECTRA6_RGB_TO_CODE.keys()),
+                    )
                     raise ValueError(
                         f"Pixel nicht in Spectra6-Palette gefunden: p1={p1}. "
                         f"Dithering muss NUR diese RGB-Werte erzeugen: {sorted(SPECTRA6_RGB_TO_CODE.keys())}"
@@ -71,6 +81,13 @@ def rgb_image_to_packed_4bit_codes(img: Image.Image, strict: bool = True) -> byt
                     c2 = SPECTRA6_RGB_TO_CODE[p2]
                 else:
                     if strict:
+                        logger.error(
+                            "Strict palette violation at (x=%s,y=%s) p2=%s allowed=%s",
+                            x + 1,
+                            y,
+                            p2,
+                            sorted(SPECTRA6_RGB_TO_CODE.keys()),
+                        )
                         raise ValueError(
                             f"Pixel nicht in Spectra6-Palette gefunden: p2={p2}. "
                             f"Dithering muss NUR diese RGB-Werte erzeugen: {sorted(SPECTRA6_RGB_TO_CODE.keys())}"

@@ -1,5 +1,5 @@
 name: "Spectra 6 Photo + Calendar Uploader"
-version: "1.0.0"
+version: "1.0.3"
 slug: "spectra_calendar_uploader"
 description: "LAN Upload UI (NFC) + serverseitiges HA-Kalenderrendering + hochwertige Spectra-6-Dithering + ESP32 Upload"
 arch:
@@ -71,7 +71,7 @@ schema:
 
   show_titles: bool
 
-  # ✅ NEU: in Schema aufnehmen
+  # Neu: in Schema aufnehmen
   max_lines_per_day: int
   max_lines_per_event: int
 
