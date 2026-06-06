@@ -9,11 +9,11 @@
 <body>
   <main class="container">
     <h1>Bild hochladen</h1>
-    <p>Nach dem Upload wird das Display aktualisiert (Foto + 7-Tage-Kalender). Das Addon kann über die Homeassistant Konfiguration eingestellt werden</p>
+    <p>Nach dem Upload wird das Display aktualisiert (Foto + Kalender). Das Add-on und die Ansichten (Tag/Monat) können über die Home Assistant Konfiguration eingestellt werden.</p>
 
-    <form method="post" enctype="multipart/form-data">
+    <form id="uploadForm" method="post" enctype="multipart/form-data">
       <input type="file" name="image" accept="image/*" required>
-      <button type="submit">Upload</button>
+      <button id="submitBtn" type="submit">Upload</button>
     </form>
 
     <hr>
@@ -23,5 +23,20 @@
       <p>Kalenderdaten werden serverseitig aus Home Assistant geladen. Im Browser werden keine Home Assistant Tokens verwendet.</p>
     </details>
   </main>
+
+  <script>
+    document.getElementById("uploadForm").addEventListener("submit", function() {
+      const btn = document.getElementById("submitBtn");
+      
+      // Minimaler Timeout, damit der Browser den Submit-Request 
+      // sauber absetzt, bevor der Button deaktiviert wird.
+      setTimeout(() => {
+        btn.disabled = true;
+        btn.innerText = "Bild wird verarbeitet... Bitte warten!";
+        btn.style.opacity = "0.7"; // Visuelles Feedback
+        btn.style.cursor = "not-allowed";
+      }, 10);
+    });
+  </script>
 </body>
 </html>
