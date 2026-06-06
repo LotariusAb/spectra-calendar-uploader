@@ -27,10 +27,10 @@ options:
   locale: "de_DE"
   
   # Neu: Steuerbares Logging (debug, info, warning, error)
-  log_level: "info"
+  log_level: str
 
   # Neu: Layout & Rendering
-  display_orientation: "portrait"
+  display_orientation: str
   out_width: 1200
   out_height: 1600
   top_ratio: 0.66
